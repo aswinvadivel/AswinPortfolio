@@ -1,0 +1,88 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #14B8A6;
+  /* Teal */
+  --color-accent: #38BDF8;
+  /* Sky Blue */
+  --color-site-bg: #0F1C2E;
+  /* Dark Navy */
+  --color-site-text: #F8FAFC;
+  /* Off-white */
+  --color-bg-dark: #0F1C2E;
+  --color-bg-card: #1A2E44;
+  --color-bg-white: #FFFFFF;
+  --color-secondary-accent: #818CF8;
+  /* Indigo/Violet */
+
+  --animate-gradient-x: gradient-x 15s ease infinite;
+  --animate-float: float 6s ease-in-out infinite;
+
+  @keyframes gradient-x {
+
+    0%,
+    100% {
+      background-size: 200% 200%;
+      background-position: left center;
+    }
+
+    50% {
+      background-size: 200% 200%;
+      background-position: right center;
+    }
+  }
+
+  @keyframes float {
+
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-[#0F1C2E] text-[#F8FAFC] font-sans antialiased;
+  }
+}
+
+.glass {
+  @apply bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl;
+}
+
+.heading-dark {
+  @apply text-primary font-bold;
+}
+
+.text-accent {
+  @apply text-accent;
+}
+
+.text-secondary-accent {
+  @apply text-secondary-accent;
+}
+
+.btn-primary {
+  @apply px-6 py-3 bg-accent text-white rounded-full font-medium transition-all hover:bg-blue-700 hover:shadow-lg active:scale-95 disabled:opacity-50;
+}
+
+.btn-secondary {
+  @apply px-6 py-3 bg-secondary-accent text-white rounded-full font-medium transition-all hover:opacity-90 hover:shadow-lg active:scale-95 disabled:opacity-50;
+}
+
+.card {
+  @apply bg-white rounded-2xl p-6 shadow-sm border border-slate-100 transition-all hover:shadow-xl hover:-translate-y-1;
+}
+
+.heading-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-accent to-secondary-accent;
+}
