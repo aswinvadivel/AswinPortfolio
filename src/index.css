@@ -86,3 +86,29 @@
 .heading-gradient {
   @apply bg-clip-text text-transparent bg-gradient-to-r from-accent to-secondary-accent;
 }
+
+/* Custom Hero Photo Blending Utilities */
+.hero-photo-container {
+  position: relative;
+  border-radius: 2.5rem;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 35%, rgba(20, 184, 166, 0.18) 0%, rgba(15, 28, 46, 0.95) 70%, #0F1C2E 100%);
+}
+
+.hero-photo-blend {
+  mask-image: radial-gradient(ellipse 92% 88% at 50% 42%, rgba(0, 0, 0, 1) 55%, rgba(0, 0, 0, 0.8) 80%, rgba(0, 0, 0, 0) 100%);
+  -webkit-mask-image: radial-gradient(ellipse 92% 88% at 50% 42%, rgba(0, 0, 0, 1) 55%, rgba(0, 0, 0, 0.8) 80%, rgba(0, 0, 0, 0) 100%);
+  object-fit: cover;
+  filter: contrast(1.08) brightness(1.12) saturate(1.06);
+}
+
+.hero-photo-overlay {
+  background: radial-gradient(ellipse 95% 90% at 50% 35%, transparent 62%, rgba(15, 28, 46, 0.3) 85%, rgba(15, 28, 46, 0.95) 100%),
+              linear-gradient(180deg, transparent 65%, rgba(15, 28, 46, 0.5) 85%, rgba(15, 28, 46, 0.98) 100%);
+}
+
+.hero-bg-photo-ambient {
+  mask-image: radial-gradient(ellipse at 75% 35%, rgba(0, 0, 0, 0.35) 0%, rgba(0, 0, 0, 0) 65%);
+  -webkit-mask-image: radial-gradient(ellipse at 75% 35%, rgba(0, 0, 0, 0.35) 0%, rgba(0, 0, 0, 0) 65%);
+  filter: blur(24px) contrast(1.15) brightness(0.65);
+}

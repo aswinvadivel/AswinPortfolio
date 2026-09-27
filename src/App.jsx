@@ -15,7 +15,16 @@ import {
   Cpu,
   Globe,
   Database,
-  ArrowUpRight
+  ArrowUpRight,
+  Award,
+  Briefcase,
+  GraduationCap,
+  Layers,
+  BookOpen,
+  Network,
+  CheckCircle2,
+  Send,
+  Loader2
 } from 'lucide-react';
 
 const LoadingScreen = ({ onComplete }) => {
@@ -42,18 +51,18 @@ const LoadingScreen = ({ onComplete }) => {
           transition={{ duration: 0.5, ease: "easeOut" }}
           className="text-4xl md:text-6xl font-black text-white mb-4"
         >
-          ASWIN <span className="text-accent">V</span>
+          ASWIN <span className="text-primary">VADIVEL</span>
         </motion.h1>
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: "100%" }}
           transition={{ duration: 1.5, ease: "easeInOut" }}
-          className="h-1 bg-accent mx-auto"
+          className="h-1 bg-primary mx-auto"
           onAnimationComplete={onComplete}
         />
       </div>
 
-      {/* Flying Icons */}
+      {/* Flying Background Icons */}
       {icons.map((item, i) => (
         <motion.div
           key={i}
@@ -65,7 +74,7 @@ const LoadingScreen = ({ onComplete }) => {
           animate={{
             x: [Math.random() * 800 - 400, Math.random() * 800 - 400, Math.random() * 800 - 400],
             y: [Math.random() * 800 - 400, Math.random() * 800 - 400, Math.random() * 800 - 400],
-            opacity: [0, 0.5, 0],
+            opacity: [0, 0.4, 0],
             scale: [0.5, 1.2, 0.5],
             rotate: [0, 180, 360]
           }}
@@ -87,6 +96,55 @@ const App = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [activeCert, setActiveCert] = useState(null);
+  const [formStatus, setFormStatus] = useState({ loading: false, success: false, error: false, message: '' });
+  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+
+  const handleContactSubmit = async (e) => {
+    e.preventDefault();
+    setFormStatus({ loading: true, success: false, error: false, message: '' });
+
+    try {
+      const response = await fetch("https://formsubmit.co/ajax/vaswin1220@gmail.com", {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          message: formData.message,
+          _subject: `New Portfolio Message from ${formData.name}`,
+          _template: "table",
+          _captcha: "false"
+        })
+      });
+
+      const data = await response.json();
+      if (response.ok && data.success !== "false") {
+        setFormStatus({
+          loading: false,
+          success: true,
+          error: false,
+          message: 'Your message has been sent directly to vaswin1220@gmail.com! Aswin will respond to your email shortly.'
+        });
+        setFormData({ name: '', email: '', message: '' });
+      } else {
+        throw new Error('API submission error');
+      }
+    } catch (err) {
+      // Fallback: direct mailto trigger with pre-filled content
+      window.location.href = `mailto:vaswin1220@gmail.com?subject=Portfolio Inquiry from ${encodeURIComponent(formData.name)}&body=${encodeURIComponent(formData.message + '\n\nFrom: ' + formData.name + ' (' + formData.email + ')')}`;
+      setFormStatus({
+        loading: false,
+        success: true,
+        error: false,
+        message: 'Your message has been routed to vaswin1220@gmail.com. Thank you!'
+      });
+      setFormData({ name: '', email: '', message: '' });
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -99,26 +157,84 @@ const App = () => {
   const navLinks = [
     { name: 'Home', href: '#home' },
     { name: 'About', href: '#about' },
+    { name: 'Experience', href: '#experience' },
     { name: 'Education', href: '#education' },
-    { name: 'Services', href: '#services' },
+    { name: 'Certifications', href: '#certifications' },
     { name: 'Projects', href: '#portfolio' },
     { name: 'Contact', href: '#contact' },
   ];
 
-  const services = [
+  const skillCategories = [
     {
-      title: 'Full Stack Development',
-      description: 'I specialize in building Web applications using Spring Boot, Java, and modern front-end technologies like React, Tailwind, and JavaScript.',
-      icon: <Code className="w-8 h-8 text-accent" />,
-      cert: 'nullclass-certificate.pdf',
-      color: 'accent'
+      title: 'Backend & Core',
+      skills: ['Java Programming', 'Spring Boot', 'REST APIs', 'Software Development Fundamentals'],
+      icon: <Terminal className="w-6 h-6 text-primary" />
     },
     {
-      title: 'Cloud Services',
-      description: 'Experience in cloud infrastructure management with AWS. Deployment, optimization, and resource management with a focus on high performance.',
-      icon: <Cloud className="w-8 h-8 text-primary" />,
-      cert: 'acmegrade-certificate.pdf',
-      color: 'primary'
+      title: 'Web & Front-End',
+      skills: ['Full-Stack Development', 'HTML5', 'CSS3', 'JavaScript', 'React Basics'],
+      icon: <Code className="w-6 h-6 text-accent" />
+    },
+    {
+      title: 'Database & Cloud',
+      skills: ['MySQL', 'MongoDB Basics', 'Basic Cloud / IT Concepts'],
+      icon: <Database className="w-6 h-6 text-primary" />
+    },
+    {
+      title: 'Networking & Systems',
+      skills: ['Networking Fundamentals', 'IT Infrastructure Basics'],
+      icon: <Network className="w-6 h-6 text-accent" />
+    }
+  ];
+
+  const educationData = [
+    {
+      institution: 'Velammal Engineering College',
+      degree: 'B.Tech – Information Technology',
+      duration: '2022 – 2026',
+      metricLabel: 'CGPA',
+      metricValue: '7.77',
+      description: 'Core focus on Software Engineering, Information Technology, Data Structures, Web Development, and Database Systems.',
+      icon: <GraduationCap className="w-8 h-8 text-primary" />
+    },
+    {
+      institution: 'AKT Matric Higher Secondary School',
+      degree: 'Higher Secondary School',
+      duration: 'Completed',
+      metricLabel: 'Percentage',
+      metricValue: '86.5%',
+      description: 'Strong academic foundation with major emphasis on Mathematics, Physics, Chemistry and Biology.',
+      icon: <BookOpen className="w-8 h-8 text-accent" />
+    }
+  ];
+
+  const certificationsData = [
+    {
+      title: "PJT – Fresher GET Foundation Training",
+      provider: 'HCLTech Onboarding',
+      description: 'Official HCLTech Certificate of Completion (Certificate No. 727450) awarded to Aswin V for successfully completing the PJT Fresher GET Foundation Training.',
+      link: 'pjet-certificate.pdf',
+      badge: 'HCLTech Certified',
+      color: 'border-primary/30 text-primary',
+      isExternal: false
+    },
+    {
+      title: 'NullClass Certification',
+      provider: 'NullClass',
+      description: 'Full-Stack Web Development certification focusing on hands-on project creation, backend integration, and interactive user interfaces.',
+      link: 'nullclass-certificate.pdf',
+      badge: 'Full-Stack Dev',
+      color: 'border-accent/30 text-accent',
+      isExternal: false
+    },
+    {
+      title: 'AcmeGrade Certification',
+      provider: 'AcmeGrade',
+      description: 'Cloud Infrastructure & AWS fundamental concepts certification focusing on deployment, cloud services, and system architectures.',
+      link: 'acmegrade-certificate.pdf',
+      badge: 'Cloud Concepts',
+      color: 'border-indigo-400/30 text-indigo-400',
+      isExternal: false
     }
   ];
 
@@ -140,7 +256,7 @@ const App = () => {
     {
       title: 'ASGO LINKS',
       description: 'Intelligent URL shortener using Spring Boot backend and MySQL database for high efficiency and analytics.',
-      image: 'Url shortner.png',
+      image: 'url_shortener.png',
       link: 'https://github.com/aswinvadivel/URL-SHORTNER',
       tags: ['Spring Boot', 'MySQL', 'Analytics']
     }
@@ -164,29 +280,29 @@ const App = () => {
         {loading && <LoadingScreen onComplete={() => setTimeout(() => setLoading(false), 500)} />}
       </AnimatePresence>
 
-      <div className={`min-h-screen bg-site-bg selection:bg-primary/20 ${loading ? 'overflow-hidden' : ''}`}>
-        {/* Navigation */}
+      <div className={`min-h-screen bg-site-bg text-site-text selection:bg-primary/20 ${loading ? 'overflow-hidden' : ''}`}>
+        {/* Navigation Bar */}
         <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'glass py-3' : 'bg-transparent py-5'}`}>
           <div className="container mx-auto px-6 flex justify-between items-center">
             <motion.a
-              href="#"
+              href="#home"
               className="text-2xl font-black text-site-text tracking-tighter"
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
             >
-              ASWIN <span className="text-primary">V</span>
+              ASWIN <span className="text-primary">VADIVEL</span>
             </motion.a>
 
             {/* Desktop Nav */}
-            <div className="hidden md:flex space-x-10">
+            <div className="hidden lg:flex space-x-8">
               {navLinks.map((link, i) => (
                 <motion.a
                   key={link.name}
                   href={link.href}
-                  className="text-sm font-black uppercase tracking-widest text-site-text/60 hover:text-primary transition-all relative group"
+                  className="text-xs font-black uppercase tracking-widest text-site-text/70 hover:text-primary transition-all relative group py-1"
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.1 }}
+                  transition={{ delay: i * 0.08 }}
                 >
                   {link.name}
                   <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full"></span>
@@ -194,26 +310,26 @@ const App = () => {
               ))}
             </div>
 
-            <button className="md:hidden text-site-text" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+            <button className="lg:hidden text-site-text p-2 rounded-lg bg-white/5 border border-white/10" onClick={() => setIsMenuOpen(!isMenuOpen)}>
               {isMenuOpen ? <X /> : <Menu />}
             </button>
           </div>
 
-          {/* Mobile Nav */}
+          {/* Mobile Nav Drawer */}
           <AnimatePresence>
             {isMenuOpen && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
-                className="md:hidden bg-site-bg/95 backdrop-blur-xl border-b border-white/10"
+                className="lg:hidden bg-site-bg/95 backdrop-blur-2xl border-b border-white/10"
               >
-                <div className="flex flex-col p-8 space-y-6">
+                <div className="flex flex-col p-8 space-y-5">
                   {navLinks.map((link) => (
                     <a
                       key={link.name}
                       href={link.href}
-                      className="text-xl font-black text-site-text uppercase tracking-widest hover:text-primary transition-colors"
+                      className="text-lg font-black text-site-text uppercase tracking-widest hover:text-primary transition-colors"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       {link.name}
@@ -226,112 +342,238 @@ const App = () => {
         </nav>
 
         {/* Hero Section */}
-        <section id="home" className="pt-48 pb-32 px-6 relative overflow-hidden">
-          <div className="absolute top-1/4 -right-20 w-96 h-96 bg-primary/10 blur-[120px] rounded-full animate-pulse"></div>
-          <div className="absolute bottom-1/4 -left-20 w-96 h-96 bg-accent/10 blur-[120px] rounded-full animate-pulse delay-1000"></div>
+        <section id="home" className="pt-40 md:pt-48 pb-28 px-6 relative overflow-hidden">
+          {/* Ambient Background Photo Layer */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden select-none">
+            <img
+              src="aswin_photo.png"
+              alt=""
+              className="absolute -right-20 top-0 w-full max-w-4xl h-full object-cover opacity-15 hero-bg-photo-ambient"
+            />
+          </div>
 
-          <div className="container mx-auto flex flex-col md:flex-row items-center justify-between relative z-10">
-            <div className="md:w-3/5 text-center md:text-left">
+          {/* Ambient Lighting Background Blobs */}
+          <div className="absolute top-1/4 -right-20 w-96 h-96 bg-primary/15 blur-[130px] rounded-full animate-pulse"></div>
+          <div className="absolute bottom-1/4 -left-20 w-96 h-96 bg-accent/15 blur-[130px] rounded-full animate-pulse delay-1000"></div>
+
+          <div className="container mx-auto flex flex-col lg:flex-row items-center justify-between gap-12 relative z-10">
+            {/* Left Content */}
+            <div className="lg:w-7/12 text-center lg:text-left">
               <motion.div
-                className="inline-block px-4 py-2 bg-primary/10 border border-primary/20 rounded-full text-primary font-black text-xs uppercase tracking-[0.3em] mb-8"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full text-primary font-black text-xs uppercase tracking-[0.25em] mb-6"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
               >
-                Tech Excellence & Innovation
+                <span className="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+                Graduate Engineer Trainee @ HCLTech
               </motion.div>
+
               <motion.h1
-                className="text-6xl md:text-[5.5rem] font-black text-site-text mb-8 leading-[0.9] tracking-tighter"
+                className="text-5xl sm:text-6xl lg:text-[4.5rem] font-black text-site-text mb-6 leading-[1.05] tracking-tighter"
                 initial={{ opacity: 0, x: -50 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
               >
-                Building <br />
-                <span className="heading-gradient italic">Next-Gen</span> <br />
-                Software.
+                ASWIN <span className="heading-gradient">VADIVEL</span>
               </motion.h1>
+
+              <motion.h2
+                className="text-xl sm:text-2xl font-bold text-accent mb-6 tracking-tight"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                IT Fresher | Graduate Engineer Trainee at HCLTech | Java & Full-Stack Enthusiast
+              </motion.h2>
+
               <motion.p
-                className="text-xl text-site-text/50 mb-12 max-w-xl leading-relaxed font-medium"
+                className="text-base sm:text-lg text-site-text/70 mb-10 max-w-2xl leading-relaxed font-medium"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
               >
-                Full Stack Developer specialized in backend excellence and scalable cloud systems.
-                Combining solid IT foundations with modern engineering practices.
+                Joined HCLTech as a Graduate Engineer Trainee and currently building my skills across technology, software development, and IT.
+                Passionate about Java programming, Spring Boot, REST APIs, and scalable web solutions.
               </motion.p>
+
               <motion.div
-                className="flex flex-wrap gap-8 justify-center md:justify-start"
+                className="flex flex-wrap gap-5 justify-center lg:justify-start items-center"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
               >
-                <a href="ASWIN_V.pdf" className="btn-primary flex items-center gap-4 text-lg px-10 py-5" download>
-                  <FileText className="w-6 h-6" /> Resume
+                <a
+                  href="ASWIN_V.pdf"
+                  className="btn-primary flex items-center gap-3 text-base font-bold px-8 py-4 rounded-2xl shadow-xl hover:shadow-primary/20"
+                  download
+                >
+                  <FileText className="w-5 h-5" /> Download Resume
                 </a>
-                <div className="flex gap-4 items-center">
-                  <a href="https://www.linkedin.com/in/aswin-vadivel-4758b5257" className="p-5 bg-white/5 border border-white/10 text-site-text rounded-[24px] hover:bg-primary hover:text-site-bg hover:border-transparent transition-all shadow-2xl active:scale-95">
-                    <Linkedin className="w-6 h-6" />
+                <div className="flex gap-3">
+                  <a
+                    href="https://www.linkedin.com/in/aswin-vadivel-4758b5257"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-4 bg-white/5 border border-white/10 text-site-text rounded-2xl hover:bg-primary hover:text-site-bg hover:border-transparent transition-all shadow-xl active:scale-95"
+                    aria-label="LinkedIn Profile"
+                  >
+                    <Linkedin className="w-5 h-5" />
                   </a>
-                  <a href="https://github.com/aswinvadivel" className="p-5 bg-white/5 border border-white/10 text-site-text rounded-[24px] hover:bg-accent hover:text-site-bg hover:border-transparent transition-all shadow-2xl active:scale-95">
-                    <Github className="w-6 h-6" />
+                  <a
+                    href="https://github.com/aswinvadivel"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-4 bg-white/5 border border-white/10 text-site-text rounded-2xl hover:bg-accent hover:text-site-bg hover:border-transparent transition-all shadow-xl active:scale-95"
+                    aria-label="GitHub Profile"
+                  >
+                    <Github className="w-5 h-5" />
                   </a>
                 </div>
               </motion.div>
             </div>
+
+            {/* Right Photo Visual with Blended Background */}
             <motion.div
-              className="md:w-1/3 mt-24 md:mt-0 relative"
+              className="lg:w-5/12 w-full max-w-md relative"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
             >
-              <div className="absolute -inset-10 bg-primary/20 blur-[100px] rounded-full"></div>
-              <div className="relative z-10 p-4 border border-white/10 rounded-[48px] bg-white/5 backdrop-blur-3xl">
-                <img
-                  src="profile_1.png"
-                  alt="Aswin"
-                  className="rounded-[36px] hover:scale-105 transition-all duration-700 w-full"
-                />
+              {/* Glow backdrop behind photo */}
+              <div className="absolute -inset-6 bg-gradient-to-r from-primary/30 to-accent/30 blur-[80px] rounded-full"></div>
+
+              {/* Photo Card with Dark Vignette Blending */}
+              <div className="relative z-10 p-3 sm:p-4 border border-white/15 rounded-[42px] bg-bg-card/40 backdrop-blur-2xl shadow-2xl overflow-hidden group">
+                <div className="relative w-full h-[480px] sm:h-[530px] rounded-[34px] overflow-hidden hero-photo-container">
+                  <img
+                    src="aswin_photo.png"
+                    alt="Aswin Vadivel - Graduate Engineer Trainee"
+                    className="w-full h-full object-cover object-[center_28%] hero-photo-blend group-hover:scale-105 transition-transform duration-700"
+                  />
+                  {/* Subtle dark gradient overlay */}
+                  <div className="absolute inset-0 hero-photo-overlay pointer-events-none"></div>
+                </div>
               </div>
-              <div className="absolute -bottom-6 -right-6 z-20 bg-accent text-site-bg px-8 py-4 rounded-2xl shadow-2xl font-black text-sm uppercase tracking-widest animate-float">
-                B.Tech IT
+
+              {/* Floating Status Pill */}
+              <div className="absolute -bottom-4 -right-4 z-20 bg-accent text-site-bg px-6 py-3 rounded-2xl shadow-2xl font-black text-xs uppercase tracking-widest animate-float flex items-center gap-2 border border-white/20">
+                <CheckCircle2 className="w-4 h-4" /> B.Tech IT | HCLTech GET
               </div>
             </motion.div>
           </div>
         </section>
 
-        {/* About Section */}
-        <section id="about" className="py-32 px-6 bg-bg-card/30 relative overflow-hidden">
-          <div className="container mx-auto flex flex-col md:flex-row items-center gap-24 relative z-10">
-            <motion.div
-              className="md:w-1/2 relative p-4"
-              {...fadeIn}
-            >
-              <div className="absolute inset-0 bg-primary/5 blur-[120px] rounded-full animate-pulse"></div>
-              <img src="profile_2.png" alt="About" className="relative z-10 rounded-[64px] shadow-2xl w-full max-w-md mx-auto border border-white/10 hover:rotate-2 transition-transform duration-500" />
+        {/* Experience Section */}
+        <section id="experience" className="py-24 px-6 bg-bg-card/20 relative border-y border-white/5">
+          <div className="container mx-auto">
+            <motion.div className="text-center mb-16" {...fadeIn}>
+              <div className="text-primary font-black uppercase tracking-[0.3em] text-xs mb-3">Professional Milestones</div>
+              <h2 className="text-4xl sm:text-5xl font-black text-site-text uppercase tracking-tighter">
+                Career <span className="heading-gradient italic">Update</span>
+              </h2>
             </motion.div>
-            <motion.div
-              className="md:w-1/2"
-              {...fadeIn}
-            >
-              <div className="text-primary font-black uppercase tracking-[0.4em] text-sm mb-6">Expertise Overview</div>
-              <h2 className="text-6xl font-black mb-10 text-site-text leading-none tracking-tighter">Solving <br />Complexity with <br /><span className="text-primary">Clean Tech.</span></h2>
-              <p className="text-lg text-site-text/50 leading-relaxed mb-12 font-medium">
-                Final-year Information Technology student at Velammal Engineering College.
-                I focus on architecting robust backends and efficient cloud environments.
-                My approach combines analytical thinking with the latest tech stacks to build production-ready solutions.
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                {[
-                  { icon: <Terminal className="text-primary" />, label: 'Architecture', text: 'Spring Boot, Java' },
-                  { icon: <Cpu className="text-accent" />, label: 'Interface', text: 'React, Tailwind' },
-                  { icon: <Database className="text-primary" />, label: 'Storage', text: 'MySQL, MongoDB' },
-                  { icon: <Cloud className="text-accent" />, label: 'Infrastructure', text: 'AWS, Deployment' },
-                ].map((item, i) => (
-                  <div key={i} className="flex flex-col gap-4 p-8 bg-white border border-purple-50 rounded-[32px] hover:border-primary/20 transition-all group shadow-sm hover:shadow-md">
-                    <div className="bg-white/5 p-4 rounded-2xl w-fit group-hover:scale-110 transition-transform">{item.icon}</div>
+
+            <div className="max-w-4xl mx-auto">
+              <motion.div
+                className="glass p-8 sm:p-12 rounded-[36px] relative overflow-hidden group border border-primary/20 hover:border-primary/40 transition-all shadow-2xl"
+                {...fadeIn}
+              >
+                <div className="absolute top-0 right-0 p-8 opacity-10 text-primary group-hover:opacity-20 transition-opacity">
+                  <Briefcase className="w-40 h-40" />
+                </div>
+
+                <div className="relative z-10">
+                  <div className="flex flex-wrap justify-between items-start gap-4 mb-6">
                     <div>
-                      <div className="text-[10px] font-black text-site-text/30 uppercase tracking-[0.2em] mb-1">{item.label}</div>
-                      <div className="text-lg font-bold text-site-text">{item.text}</div>
+                      <span className="px-4 py-1.5 bg-primary/10 border border-primary/30 text-primary text-xs font-black rounded-full uppercase tracking-wider inline-block mb-3">
+                        Professional Status: Joined HCLTech
+                      </span>
+                      <h3 className="text-3xl sm:text-4xl font-black text-white tracking-tight">HCLTech</h3>
+                      <div className="text-xl font-bold text-accent mt-1">Graduate Engineer Trainee</div>
                     </div>
+                    <div className="text-right">
+                      <span className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-xs font-bold text-site-text/70 inline-block">
+                        Present
+                      </span>
+                    </div>
+                  </div>
+
+                  <p className="text-site-text/80 text-base sm:text-lg leading-relaxed font-medium max-w-2xl">
+                    Joined HCLTech as a Graduate Engineer Trainee and currently building my skills across technology, software development, and IT. Learning and developing professionally within the organization.
+                  </p>
+                </div>
+              </motion.div>
+            </div>
+          </div>
+        </section>
+
+        {/* About Section */}
+        <section id="about" className="py-28 px-6 relative overflow-hidden">
+          <div className="container mx-auto flex flex-col lg:flex-row items-center gap-16 relative z-10">
+            {/* Visual Column with Suit Photo */}
+            <motion.div className="lg:w-5/12 w-full relative" {...fadeIn}>
+              {/* Ambient Glow */}
+              <div className="absolute -inset-4 bg-gradient-to-r from-accent/20 to-primary/20 blur-[70px] rounded-full pointer-events-none"></div>
+
+              {/* Photo Frame Card */}
+              <div className="relative z-10 p-3.5 sm:p-4 rounded-[42px] glass border border-white/15 shadow-2xl overflow-hidden group">
+                <div className="relative w-full h-[520px] sm:h-[560px] rounded-[34px] overflow-hidden bg-bg-card/80">
+                  <img
+                    src="aswin_photo_suit_old.png"
+                    alt="Aswin Vadivel - Formal Suit Portrait"
+                    className="w-full h-full object-cover object-[center_35%] group-hover:scale-105 transition-transform duration-700"
+                  />
+                  {/* Bottom Vignette & Gradient Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-site-bg/95 via-site-bg/15 to-transparent pointer-events-none"></div>
+
+                  {/* Bottom Info Overlay inside the Photo */}
+                  <div className="absolute bottom-4 left-4 right-4 p-4 rounded-2xl bg-site-bg/90 backdrop-blur-md border border-white/15 shadow-xl">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="text-[11px] font-black text-primary uppercase tracking-widest">Formal Profile</div>
+                        <div className="text-base sm:text-lg font-black text-white">Aswin Vadivel</div>
+                      </div>
+                      <div className="px-3 py-1.5 bg-accent/15 border border-accent/30 rounded-xl text-accent font-bold text-xs flex items-center gap-1.5">
+                        <GraduationCap className="w-4 h-4" /> B.Tech IT Graduate
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Floating Highlight Pill */}
+              <div className="absolute -top-3 -right-3 z-20 bg-primary text-site-bg px-5 py-2.5 rounded-2xl shadow-xl font-black text-xs uppercase tracking-wider animate-float flex items-center gap-2 border border-white/20">
+                <CheckCircle2 className="w-4 h-4" /> Software Engineer
+              </div>
+            </motion.div>
+
+            {/* Content Column */}
+            <motion.div className="lg:w-7/12" {...fadeIn}>
+              <div className="text-primary font-black uppercase tracking-[0.3em] text-xs mb-4">Background & Skillset</div>
+              <h2 className="text-4xl sm:text-5xl font-black mb-8 text-site-text leading-tight tracking-tighter">
+                Driven IT Graduate <br />
+                <span className="heading-gradient">Continuous Learner.</span>
+              </h2>
+              <p className="text-base sm:text-lg text-site-text/70 leading-relaxed mb-10 font-medium">
+                I am an Information Technology graduate who completed my B.Tech at Velammal Engineering College. Interested in software development, Java full-stack technologies, REST APIs, database management, networking fundamentals, and continuously learning new technologies to build efficient digital solutions.
+              </p>
+
+              {/* Skills Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {skillCategories.map((cat, idx) => (
+                  <div key={idx} className="p-6 bg-white/5 border border-white/10 rounded-2xl hover:border-primary/30 transition-all">
+                    <div className="flex items-center gap-3 mb-4">
+                      {cat.icon}
+                      <h4 className="text-base font-bold text-white tracking-tight">{cat.title}</h4>
+                    </div>
+                    <ul className="space-y-2">
+                      {cat.skills.map((skill, sIdx) => (
+                        <li key={sIdx} className="text-xs font-semibold text-site-text/70 flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-primary/70"></span>
+                          {skill}
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 ))}
               </div>
@@ -340,45 +582,42 @@ const App = () => {
         </section>
 
         {/* Education Section */}
-        <section id="education" className="py-32 px-6 relative">
+        <section id="education" className="py-28 px-6 bg-bg-card/20 relative border-t border-white/5">
           <div className="container mx-auto">
-            <motion.div className="text-center mb-24" {...fadeIn}>
-              <h2 className="text-6xl font-black mb-8 text-site-text uppercase tracking-tighter">Academic <span className="heading-gradient italic">Journey</span></h2>
-              <p className="text-lg text-site-text/40 max-w-2xl mx-auto font-medium tracking-tight">Solid foundations from top institutions.</p>
+            <motion.div className="text-center mb-20" {...fadeIn}>
+              <div className="text-primary font-black uppercase tracking-[0.3em] text-xs mb-3">Academic Foundations</div>
+              <h2 className="text-4xl sm:text-5xl font-black mb-6 text-site-text uppercase tracking-tighter">
+                Education <span className="heading-gradient italic">Timeline</span>
+              </h2>
+              <p className="text-base text-site-text/60 max-w-xl mx-auto font-medium">
+                Verified educational qualification and academic performance metrics.
+              </p>
             </motion.div>
 
-            <div className="max-w-4xl mx-auto space-y-12">
-              {[
-                {
-                  type: 'University',
-                  institution: 'Velammal Engineering College',
-                  degree: 'B.Tech Information Technology',
-                  description: 'Core focus on Information Systems, Software Architecture, and Advanced Web Tech. 2021 - Present.',
-                  icon: <Globe className="w-8 h-8 text-primary" />
-                },
-                {
-                  type: 'Secondary',
-                  institution: 'A.K.T Matric Higher Secondary School',
-                  degree: 'High School Diploma',
-                  description: 'Strong academic record with emphasis on Science and Mathematics.',
-                  icon: <Cpu className="w-8 h-8 text-accent" />
-                }
-              ].map((edu, i) => (
+            <div className="max-w-4xl mx-auto space-y-8">
+              {educationData.map((edu, i) => (
                 <motion.div
                   key={i}
-                  className="group relative flex flex-col md:flex-row gap-10 p-12 bg-white border border-purple-50 rounded-[48px] hover:bg-white/80 transition-all duration-700 hover:border-primary/20 shadow-sm"
+                  className="glass p-8 sm:p-10 rounded-[36px] flex flex-col md:flex-row gap-8 items-start md:items-center justify-between border border-white/10 hover:border-primary/30 transition-all"
                   initial={{ opacity: 0, x: i % 2 === 0 ? -30 : 30 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                 >
-                  <div className="flex-shrink-0 w-24 h-24 bg-primary text-site-bg rounded-[24px] flex items-center justify-center group-hover:rotate-12 transition-transform shadow-2xl">
-                    {edu.icon}
+                  <div className="flex gap-6 items-start">
+                    <div className="w-16 h-16 bg-primary/10 border border-primary/20 text-primary rounded-2xl flex items-center justify-center shrink-0">
+                      {edu.icon}
+                    </div>
+                    <div>
+                      <div className="text-xs font-black text-primary uppercase tracking-widest mb-1">{edu.duration}</div>
+                      <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight">{edu.institution}</h3>
+                      <div className="text-lg font-bold text-accent mt-1 mb-3">{edu.degree}</div>
+                      <p className="text-site-text/60 text-sm font-medium leading-relaxed max-w-xl">{edu.description}</p>
+                    </div>
                   </div>
-                  <div className="flex-grow">
-                    <div className="text-xs font-black text-primary uppercase tracking-[0.4em] mb-4">{edu.type}</div>
-                    <h3 className="text-4xl font-black text-primary mb-3 tracking-tighter">{edu.institution}</h3>
-                    <div className="text-2xl font-bold text-accent mb-6">{edu.degree}</div>
-                    <p className="text-site-text/40 leading-relaxed font-semibold text-lg">{edu.description}</p>
+
+                  <div className="shrink-0 p-5 bg-white/5 border border-white/10 rounded-2xl text-center min-w-[140px] w-full md:w-auto">
+                    <div className="text-xs font-bold text-site-text/50 uppercase tracking-wider">{edu.metricLabel}</div>
+                    <div className="text-3xl font-black text-primary mt-1">{edu.metricValue}</div>
                   </div>
                 </motion.div>
               ))}
@@ -386,32 +625,59 @@ const App = () => {
           </div>
         </section>
 
-        {/* Services Section */}
-        <section id="services" className="py-32 px-6 bg-bg-card/20 relative">
+        {/* Certifications Section (Directly after Education) */}
+        <section id="certifications" className="py-28 px-6 relative">
           <div className="container mx-auto">
-            <motion.div className="text-center mb-24" {...fadeIn}>
-              <h2 className="text-6xl font-black mb-8 text-site-text uppercase tracking-tighter">Core <span className="text-primary underline decoration-primary decoration-8 underline-offset-10">Systems</span></h2>
-              <p className="text-lg text-site-text/40 max-w-2xl mx-auto font-medium tracking-tight">Engineered for performance and reliability.</p>
+            <motion.div className="text-center mb-20" {...fadeIn}>
+              <div className="text-primary font-black uppercase tracking-[0.3em] text-xs mb-3">Professional Credentials</div>
+              <h2 className="text-4xl sm:text-5xl font-black mb-6 text-site-text uppercase tracking-tighter">
+                Certifications & <span className="heading-gradient italic">Courses</span>
+              </h2>
+              <p className="text-base text-site-text/60 max-w-xl mx-auto font-medium">
+                Verified training and certifications completed during academic and professional onboarding.
+              </p>
             </motion.div>
-            <div className="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto">
-              {services.map((service, i) => (
+
+            <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+              {certificationsData.map((cert, i) => (
                 <motion.div
                   key={i}
-                  className="bg-white/5 p-16 rounded-[64px] shadow-2xl relative overflow-hidden group border border-white/5 hover:border-primary/20 transition-all duration-700"
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
+                  className="glass p-8 rounded-[32px] flex flex-col justify-between border border-white/10 hover:border-primary/30 transition-all group"
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: i * 0.2 }}
+                  transition={{ delay: i * 0.15 }}
                 >
-                  <div className="absolute -top-10 -right-10 w-40 h-40 bg-primary/5 blur-[60px] rounded-full group-hover:bg-primary/10 transition-colors"></div>
-                  <div className="mb-12 p-8 bg-white/5 border border-white/10 rounded-[32px] w-fit group-hover:rotate-12 transition-transform duration-500 text-primary">
-                    {service.icon}
+                  <div>
+                    <div className="flex justify-between items-start mb-6">
+                      <div className="p-4 bg-white/5 rounded-2xl text-primary group-hover:scale-110 transition-transform">
+                        <Award className="w-8 h-8" />
+                      </div>
+                      <span className={`px-3 py-1 bg-white/5 border rounded-full text-[11px] font-black uppercase tracking-wider ${cert.color}`}>
+                        {cert.badge}
+                      </span>
+                    </div>
+
+                    <h3 className="text-xl font-black text-white mb-2 tracking-tight">{cert.title}</h3>
+                    <div className="text-xs font-bold text-accent mb-4 uppercase tracking-wider">{cert.provider}</div>
+                    <p className="text-site-text/60 text-sm leading-relaxed mb-8 font-medium">
+                      {cert.description}
+                    </p>
                   </div>
-                  <h3 className="text-4xl font-black text-site-text mb-8 tracking-tighter uppercase">{service.title}</h3>
-                  <p className="text-site-text/40 text-xl font-medium mb-12 leading-relaxed">{service.description}</p>
-                  <a href={service.cert} className="inline-flex items-center gap-4 px-10 py-5 rounded-3xl font-black bg-primary text-site-bg hover:bg-accent transition-all uppercase tracking-widest text-sm" download>
-                    Verify Certification <ArrowUpRight className="w-6 h-6" />
-                  </a>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (cert.isExternal) {
+                        window.open(cert.link, '_blank', 'noopener,noreferrer');
+                      } else {
+                        setActiveCert(cert);
+                      }
+                    }}
+                    className="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-bold bg-primary text-site-bg hover:bg-accent transition-all text-sm shadow-lg cursor-pointer active:scale-95"
+                  >
+                    View Certificate <ExternalLink className="w-4 h-4" />
+                  </button>
                 </motion.div>
               ))}
             </div>
@@ -419,19 +685,27 @@ const App = () => {
         </section>
 
         {/* Projects Section */}
-        <section id="portfolio" className="py-32 px-6">
+        <section id="portfolio" className="py-28 px-6 bg-bg-card/20 border-t border-white/5">
           <div className="container mx-auto">
-            <motion.div className="flex flex-col md:flex-row justify-between items-end mb-24" {...fadeIn}>
-              <div className="text-left">
-                <h2 className="text-6xl font-black mb-6 text-site-text uppercase tracking-tighter">Production <br /><span className="heading-gradient italic">Artifacts.</span></h2>
-                <p className="text-lg text-site-text/30 font-black uppercase tracking-[0.4em]">Real-world applications</p>
+            <motion.div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-6" {...fadeIn}>
+              <div>
+                <div className="text-primary font-black uppercase tracking-[0.3em] text-xs mb-3">College Projects</div>
+                <h2 className="text-4xl sm:text-5xl font-black text-site-text uppercase tracking-tighter">
+                  Featured <span className="heading-gradient italic">Repositories</span>
+                </h2>
               </div>
-              <a href="https://github.com/aswinvadivel" className="mt-8 md:mt-0 flex items-center gap-4 text-primary font-black uppercase tracking-widest group text-sm">
-                Open Source Pool <ChevronRight className="w-6 h-6 group-hover:translate-x-3 transition-transform" />
+              <a
+                href="https://github.com/aswinvadivel"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-primary font-bold uppercase tracking-widest text-xs hover:text-accent transition-colors"
+              >
+                GitHub Profile <ChevronRight className="w-4 h-4" />
               </a>
             </motion.div>
+
             <motion.div
-              className="grid md:grid-cols-3 gap-10"
+              className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto"
               variants={staggerContainer}
               initial="initial"
               whileInView="whileInView"
@@ -440,35 +714,46 @@ const App = () => {
               {projects.map((project, i) => (
                 <motion.div
                   key={i}
-                  className="group bg-white rounded-[48px] overflow-hidden shadow-xl transition-all duration-700 border border-purple-100 hover:border-primary/50"
+                  className="group glass rounded-[36px] overflow-hidden border border-white/10 hover:border-primary/40 transition-all duration-500 flex flex-col justify-between"
                   variants={fadeIn}
                 >
-                  <div className="h-[400px] overflow-hidden relative">
-                    <img
-                      src={project.image}
-                      alt={project.title}
-                      className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000"
-                    />
-                    <div className="absolute inset-0 bg-site-bg/80 opacity-0 group-hover:opacity-100 transition-all duration-500 backdrop-blur-sm flex items-center justify-center p-12 text-center">
-                      <div className="translate-y-10 group-hover:translate-y-0 transition-transform duration-500">
-                        <h4 className="text-4xl font-black text-site-text mb-6 uppercase tracking-tighter">{project.title}</h4>
-                        <p className="text-site-text/60 mb-8 max-w-sm mx-auto font-semibold leading-relaxed">{project.description}</p>
-                        <a href={project.link} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-4 p-6 bg-primary text-site-bg rounded-3xl font-black uppercase tracking-widest text-sm hover:bg-accent transition-colors shadow-2xl">
-                          Code Access <Github className="w-6 h-6" />
-                        </a>
-                      </div>
+                  <div>
+                    {/* Image Container */}
+                    <div className="h-60 overflow-hidden relative">
+                      <img
+                        src={project.image}
+                        alt={project.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-site-bg via-site-bg/20 to-transparent"></div>
                     </div>
-                  </div>
-                  <div className="p-10 flex justify-between items-center">
-                    <div>
-                      <h3 className="text-2xl font-black text-site-text uppercase tracking-tight">{project.title}</h3>
-                      <div className="flex flex-wrap gap-2 mt-4">
+
+                    {/* Content */}
+                    <div className="p-8">
+                      <h3 className="text-2xl font-black text-white mb-3 tracking-tight">{project.title}</h3>
+                      <p className="text-site-text/70 text-sm leading-relaxed mb-6 font-medium">
+                        {project.description}
+                      </p>
+
+                      <div className="flex flex-wrap gap-2 mb-6">
                         {project.tags.map(tag => (
-                          <span key={tag} className="px-3 py-1 bg-white/10 text-primary text-[10px] font-black rounded-lg uppercase tracking-widest border border-white/5">{tag}</span>
+                          <span key={tag} className="px-3 py-1 bg-white/5 text-primary text-[10px] font-black rounded-lg uppercase tracking-wider border border-white/5">
+                            {tag}
+                          </span>
                         ))}
                       </div>
                     </div>
-                    <ArrowUpRight className="w-10 h-10 text-primary/20 group-hover:text-primary transition-colors" />
+                  </div>
+
+                  <div className="px-8 pb-8">
+                    <a
+                      href={project.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full inline-flex items-center justify-center gap-3 py-3.5 bg-white/5 border border-white/10 hover:bg-primary hover:text-site-bg hover:border-transparent text-white rounded-xl font-bold transition-all text-sm shadow-md"
+                    >
+                      <Github className="w-4 h-4" /> View on GitHub
+                    </a>
                   </div>
                 </motion.div>
               ))}
@@ -477,99 +762,239 @@ const App = () => {
         </section>
 
         {/* Contact Section */}
-        <section id="contact" className="py-40 px-6 relative overflow-hidden">
-          <div className="absolute -left-20 bottom-20 text-[180px] font-black text-white/5 select-none -z-10 uppercase -rotate-90">Protocol.</div>
+        <section id="contact" className="py-32 px-6 relative overflow-hidden">
+          <div className="container mx-auto max-w-5xl">
+            <div className="flex flex-col lg:flex-row gap-16 items-center relative z-10">
+              <motion.div className="lg:w-5/12 w-full" {...fadeIn}>
+                <div className="text-primary font-black uppercase tracking-[0.3em] text-xs mb-4">Get In Touch</div>
+                <h2 className="text-5xl font-black mb-8 text-site-text leading-tight tracking-tighter">
+                  Let's <span className="heading-gradient">Connect.</span>
+                </h2>
+                <p className="text-site-text/70 text-base leading-relaxed mb-10 font-medium">
+                  Feel free to reach out for professional inquiries, technology discussions, or networking opportunities.
+                </p>
 
-          <div className="container mx-auto max-w-6xl">
-            <div className="flex flex-col md:flex-row gap-24 items-center relative z-10">
-              <motion.div className="md:w-5/12" {...fadeIn}>
-                <div className="text-primary font-black uppercase tracking-[0.5em] text-sm mb-8 italic">Initiate Connection</div>
-                <h2 className="text-7xl font-black mb-12 text-site-text leading-[0.9] tracking-tighter">Let's <br />Deploy <br /><span className="heading-gradient underline decoration-8 underline-offset-[16px]">Impact.</span></h2>
-                <div className="space-y-12">
-                  <div className="flex items-center gap-8 group">
-                    <div className="w-20 h-20 bg-primary/10 border border-primary/20 text-primary flex items-center justify-center rounded-[24px] shadow-2xl group-hover:bg-primary group-hover:text-site-bg transition-all duration-500">
-                      <Mail className="w-10 h-10" />
+                <div className="space-y-6">
+                  <div className="flex items-center gap-5">
+                    <div className="w-14 h-14 bg-primary/10 border border-primary/20 text-primary flex items-center justify-center rounded-2xl shrink-0">
+                      <Mail className="w-6 h-6" />
                     </div>
                     <div>
-                      <div className="text-xs font-black text-site-text/30 uppercase tracking-[0.3em] mb-1">Secure Channel</div>
-                      <div className="text-2xl font-black text-site-text tracking-tighter group-hover:text-primary transition-colors italic">vaswin1220@gmail.com</div>
+                      <div className="text-xs font-bold text-site-text/40 uppercase tracking-wider">Email Address</div>
+                      <a href="mailto:vaswin1220@gmail.com" className="text-lg font-bold text-white hover:text-primary transition-colors">
+                        vaswin1220@gmail.com
+                      </a>
                     </div>
                   </div>
-                  <div className="flex items-center gap-8 group">
-                    <div className="w-20 h-20 bg-accent/10 border border-accent/20 text-accent flex items-center justify-center rounded-[24px] shadow-2xl group-hover:bg-accent group-hover:text-site-bg transition-all duration-500">
-                      <Linkedin className="w-10 h-10" />
+
+                  <div className="flex items-center gap-5">
+                    <div className="w-14 h-14 bg-accent/10 border border-accent/20 text-accent flex items-center justify-center rounded-2xl shrink-0">
+                      <Linkedin className="w-6 h-6" />
                     </div>
                     <div>
-                      <div className="text-xs font-black text-site-text/30 uppercase tracking-[0.3em] mb-1">Professional Mesh</div>
-                      <div className="text-2xl font-black text-site-text tracking-tighter group-hover:text-accent transition-colors italic">@aswinvadivel</div>
+                      <div className="text-xs font-bold text-site-text/40 uppercase tracking-wider">LinkedIn Profile</div>
+                      <a href="https://www.linkedin.com/in/aswin-vadivel-4758b5257" target="_blank" rel="noopener noreferrer" className="text-lg font-bold text-white hover:text-accent transition-colors">
+                        aswin-vadivel-4758b5257
+                      </a>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-5">
+                    <div className="w-14 h-14 bg-primary/10 border border-primary/20 text-primary flex items-center justify-center rounded-2xl shrink-0">
+                      <Github className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-site-text/40 uppercase tracking-wider">GitHub Profile</div>
+                      <a href="https://github.com/aswinvadivel" target="_blank" rel="noopener noreferrer" className="text-lg font-bold text-white hover:text-primary transition-colors">
+                        github.com/aswinvadivel
+                      </a>
                     </div>
                   </div>
                 </div>
               </motion.div>
 
-              <motion.div
-                className="md:w-7/12 w-full glass p-16 rounded-[64px] relative"
-                {...fadeIn}
-              >
-                <div className="absolute -top-10 -right-10 w-40 h-40 bg-accent/20 blur-[80px] rounded-full animate-pulse"></div>
-                <form action="https://formsubmit.co/vaswin1220@gmail.com" method="POST" className="space-y-10 relative z-10">
-                  <input type="hidden" name="_subject" value="Protocol Initiated: New Portfolio Message" />
-                  <input type="hidden" name="_template" value="table" />
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
-                    <div className="space-y-4">
-                      <label className="text-xs font-black text-site-text/40 uppercase tracking-widest ml-2 italic underline decoration-primary/50 underline-offset-4">Full Identity</label>
-                      <input type="text" name="name" placeholder="Agent Name" required className="w-full px-8 py-6 bg-white/5 border border-white/10 rounded-[28px] text-site-text placeholder:text-site-text/20 focus:ring-4 focus:ring-primary/20 focus:border-primary outline-none transition-all font-black" />
-                    </div>
-                    <div className="space-y-4">
-                      <label className="text-xs font-black text-site-text/40 uppercase tracking-widest ml-2 italic underline decoration-accent/50 underline-offset-4">Encrypted Mail</label>
-                      <input type="email" name="email" placeholder="agent@org.com" required className="w-full px-8 py-6 bg-white/5 border border-white/10 rounded-[28px] text-site-text placeholder:text-site-text/20 focus:ring-4 focus:ring-accent/20 focus:border-accent outline-none transition-all font-black" />
-                    </div>
-                  </div>
-                  <div className="space-y-4">
-                    <label className="text-xs font-black text-site-text/40 uppercase tracking-widest ml-2 italic underline decoration-primary/50 underline-offset-4">Mission Brief</label>
-                    <textarea rows="4" name="message" placeholder="Describe the mission objective..." required className="w-full px-8 py-6 bg-white/5 border border-white/10 rounded-[28px] text-site-text placeholder:text-site-text/20 focus:ring-4 focus:ring-primary/20 focus:border-primary outline-none transition-all resize-none font-black italic"></textarea>
-                  </div>
-                  <motion.button
-                    type="submit"
-                    className="w-full bg-primary text-site-bg text-xl font-black py-8 rounded-[32px] uppercase tracking-[0.3em] shadow-[0_0_50px_rgba(20,184,166,0.2)] hover:shadow-[0_0_80px_rgba(20,184,166,0.4)] transition-all relative overflow-hidden group"
-                    whileHover={{ scale: 1.01 }}
-                    whileTap={{ scale: 0.99 }}
+              {/* Form Container */}
+              <motion.div className="lg:w-7/12 w-full glass p-8 sm:p-12 rounded-[40px] relative border border-white/10" {...fadeIn}>
+                {formStatus.success ? (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="p-8 sm:p-10 rounded-3xl bg-primary/10 border border-primary/30 text-center space-y-4"
                   >
-                    <span className="relative z-10">Transmit Message</span>
-                    <div className="absolute inset-0 bg-accent translate-x-full group-hover:translate-x-0 transition-transform duration-500"></div>
-                  </motion.button>
-                </form>
+                    <div className="w-16 h-16 bg-primary/20 text-primary rounded-full flex items-center justify-center mx-auto">
+                      <CheckCircle2 className="w-8 h-8" />
+                    </div>
+                    <h3 className="text-2xl font-black text-white">Message Sent!</h3>
+                    <p className="text-site-text/80 text-sm leading-relaxed max-w-md mx-auto font-medium">
+                      {formStatus.message}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setFormStatus({ loading: false, success: false, error: false, message: '' })}
+                      className="mt-4 px-6 py-3 bg-primary text-site-bg rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-accent transition-all cursor-pointer shadow-lg active:scale-95"
+                    >
+                      Send Another Message
+                    </button>
+                  </motion.div>
+                ) : (
+                  <form onSubmit={handleContactSubmit} className="space-y-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold text-site-text/60 uppercase tracking-wider ml-1">Your Name</label>
+                        <input
+                          type="text"
+                          name="name"
+                          value={formData.name}
+                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                          placeholder="John Doe"
+                          required
+                          className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl text-site-text placeholder:text-site-text/30 focus:border-primary outline-none font-medium transition-all"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold text-site-text/60 uppercase tracking-wider ml-1">Your Email</label>
+                        <input
+                          type="email"
+                          name="email"
+                          value={formData.email}
+                          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                          placeholder="john@example.com"
+                          required
+                          className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl text-site-text placeholder:text-site-text/30 focus:border-accent outline-none font-medium transition-all"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-site-text/60 uppercase tracking-wider ml-1">Message</label>
+                      <textarea
+                        rows="4"
+                        name="message"
+                        value={formData.message}
+                        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                        placeholder="Write your message here..."
+                        required
+                        className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl text-site-text placeholder:text-site-text/30 focus:border-primary outline-none font-medium transition-all resize-none"
+                      ></textarea>
+                    </div>
+
+                    <motion.button
+                      type="submit"
+                      disabled={formStatus.loading}
+                      className="w-full bg-primary text-site-bg text-base font-black py-4 rounded-2xl uppercase tracking-widest shadow-xl hover:bg-accent transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-70"
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
+                    >
+                      {formStatus.loading ? (
+                        <>
+                          <Loader2 className="w-5 h-5 animate-spin" /> Sending to vaswin1220@gmail.com...
+                        </>
+                      ) : (
+                        <>
+                          <Send className="w-5 h-5" /> Send Message
+                        </>
+                      )}
+                    </motion.button>
+                  </form>
+                )}
               </motion.div>
             </div>
           </div>
         </section>
 
         {/* Footer */}
-        <footer className="py-24 bg-site-bg border-t border-white/10">
+        <footer className="py-16 bg-site-bg border-t border-white/10">
           <div className="container mx-auto px-6">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-16">
-              <div className="text-center md:text-left">
-                <h2 className="text-5xl font-black tracking-tighter mb-6 text-site-text">
-                  ASWIN <span className="text-primary italic underline underline-offset-[12px]">V</span>
+            <div className="flex flex-col md:flex-row justify-between items-center gap-8">
+              <div>
+                <h2 className="text-3xl font-black tracking-tighter text-white">
+                  ASWIN <span className="text-primary">VADIVEL</span>
                 </h2>
-                <div className="flex gap-6 mt-10">
-                  <a href="https://www.linkedin.com/in/aswin-vadivel-4758b5257" className="p-5 bg-white/5 border border-white/10 rounded-2xl hover:bg-primary transition-all text-site-text hover:text-site-bg shadow-xl"><Linkedin className="w-6 h-6" /></a>
-                  <a href="https://github.com/aswinvadivel" className="p-5 bg-white/5 border border-white/10 rounded-2xl hover:bg-accent transition-all text-site-text hover:text-site-bg shadow-xl"><Github className="w-6 h-6" /></a>
-                  <a href="mailto:vaswin1220@gmail.com" className="p-5 bg-white/5 border border-white/10 rounded-2xl hover:bg-primary transition-all text-site-text hover:text-site-bg shadow-xl"><Mail className="w-6 h-6" /></a>
-                </div>
+                <p className="text-xs font-semibold text-site-text/50 mt-2">
+                  IT Fresher | Graduate Engineer Trainee at HCLTech
+                </p>
               </div>
-              <div className="flex flex-col items-center md:items-end gap-10">
-                <nav className="flex flex-wrap gap-10 justify-center">
-                  {navLinks.map(link => (
-                    <a key={link.name} href={link.href} className="text-sm font-black uppercase tracking-[0.3em] text-site-text/40 hover:text-primary transition-colors underline decoration-transparent hover:decoration-primary underline-offset-8">{link.name}</a>
-                  ))}
-                </nav>
+
+              <div className="flex gap-4">
+                <a href="https://www.linkedin.com/in/aswin-vadivel-4758b5257" target="_blank" rel="noopener noreferrer" className="p-3 bg-white/5 border border-white/10 rounded-xl hover:bg-primary hover:text-site-bg transition-all text-site-text">
+                  <Linkedin className="w-5 h-5" />
+                </a>
+                <a href="https://github.com/aswinvadivel" target="_blank" rel="noopener noreferrer" className="p-3 bg-white/5 border border-white/10 rounded-xl hover:bg-accent hover:text-site-bg transition-all text-site-text">
+                  <Github className="w-5 h-5" />
+                </a>
+                <a href="mailto:vaswin1220@gmail.com" className="p-3 bg-white/5 border border-white/10 rounded-xl hover:bg-primary hover:text-site-bg transition-all text-site-text">
+                  <Mail className="w-5 h-5" />
+                </a>
               </div>
+            </div>
+
+            <div className="text-center text-xs text-site-text/40 font-medium mt-12 pt-8 border-t border-white/5">
+              © {new Date().getFullYear()} Aswin Vadivel. All rights reserved.
             </div>
           </div>
         </footer>
       </div>
+
+      {/* Interactive Certificate Viewer Modal */}
+      <AnimatePresence>
+        {activeCert && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[120] flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md"
+            onClick={() => setActiveCert(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.92, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.92, opacity: 0, y: 20 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="relative w-full max-w-5xl h-[88vh] bg-site-bg border border-white/20 rounded-3xl shadow-2xl flex flex-col overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Modal Header */}
+              <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-white/5">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-xl bg-primary/10 border border-primary/20 text-primary">
+                    <Award className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">{activeCert.title}</h3>
+                    <p className="text-xs text-site-text/60 font-medium">{activeCert.provider}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <a
+                    href={activeCert.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-semibold text-site-text hover:text-white hover:bg-primary/20 transition-all"
+                  >
+                    Open in New Tab <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                  <button
+                    onClick={() => setActiveCert(null)}
+                    className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-site-text hover:text-white transition-all cursor-pointer"
+                    aria-label="Close"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Modal Content - In-Page PDF Viewer */}
+              <div className="flex-1 w-full h-full bg-[#0F1C2E] p-2 sm:p-4">
+                <iframe
+                  src={`${activeCert.link}#toolbar=1&navpanes=0`}
+                  title={activeCert.title}
+                  className="w-full h-full rounded-2xl border border-white/10 bg-white"
+                />
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 };
